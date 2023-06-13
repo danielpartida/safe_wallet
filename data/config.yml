@@ -1,0 +1,13 @@
+chain_id:
+  1: ethereum
+  42161: arbitrum
+  56: bnb
+  137: polygon
+  5: goerli
+  10: optimism
+  43114: avalanche
+  100: gnosis
+  84531: base
+  1313161554: aurora
+  42220: celo
+  11155111: sepolia
