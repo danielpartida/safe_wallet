@@ -6,7 +6,7 @@ def create_line_chart(df: pd.DataFrame, chains: list, title: str) -> go.Figure:
     fig = go.Figure()
 
     for chain in chains:
-        fig.add_trace(go.Scatter(x=df.date, y=df[chain], mode='lines', name=chain))
+        fig.add_trace(go.Scatter(x=df.index, y=df[chain], mode='lines', name=chain))
 
     fig.update_layout(
         title=title,
@@ -26,7 +26,7 @@ def create_area_chart(df: pd.DataFrame, chains: list, title: str) -> go.Figure:
             groupnorm_value = None
 
         fig.add_trace(go.Scatter(
-            x=df.date, y=df[chain],
+            x=df.index, y=df[chain],
             mode='lines',
             name=chain,
             # line=dict(width=0.5, color='grey'),
