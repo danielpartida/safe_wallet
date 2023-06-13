@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
 
-from charts import create_line_chart
+from charts import create_line_chart, create_area_chart
 
 # Reading data
 df_pct = pd.read_csv('data/df_pct.csv')
@@ -64,63 +63,11 @@ with st.expander("See more chain metrics"):
 st.divider()
 st.subheader(body='Charts Safe{Wallet} share creation')
 
-fig_1 = create_line_chart(df=df_pct, columns=chains, title='Daily Safe creation share')
-st.plotly_chart(fig_1)
+fig_line_chart = create_line_chart(df=df_pct, chains=chains, title='Daily Safe creation share')
+st.plotly_chart(fig_line_chart)
 
-fig = go.Figure()
-fig.add_trace(go.Scatter(
-    x=df_pct.date, y=df_pct.ethereum,
-    mode='lines',
-    name='ethereum',
-    line=dict(width=0.5, color='grey'),
-    stackgroup='one',  # define stack group
-    groupnorm='percent'  # sets the normalization for the sum of the stackgroup
-))
-fig.add_trace(go.Scatter(
-    x=df_pct.date, y=df_pct.polygon,
-    mode='lines',
-    name='polygon',
-    line=dict(width=0.5, color='purple'),
-    stackgroup='one'
-))
-fig.add_trace(go.Scatter(
-    x=df_pct.date, y=df_pct.arbitrum,
-    mode='lines',
-    name='arbitrum',
-    line=dict(width=0.5, color='blue'),
-    stackgroup='one'
-))
-fig.add_trace(go.Scatter(
-    x=df_pct.date, y=df_pct.optimism,
-    mode='lines',
-    name='optimism',
-    line=dict(width=0.5, color='red'),
-    stackgroup='one'
-))
-fig.add_trace(go.Scatter(
-    x=df_pct.date, y=df_pct.gnosis,
-    mode='lines',
-    name='gnosis',
-    line=dict(width=0.5, color='green'),
-    stackgroup='one'
-))
-fig.add_trace(go.Scatter(
-    x=df_pct.date, y=df_pct.avalanche,
-    mode='lines',
-    name='avalanche',
-    line=dict(width=0.5, color='orange'),
-    stackgroup='one'
-))
-fig.update_layout(
-    title='Normalized daily Safe creation % Safe{Wallet} / ecosystem',
-    showlegend=True,
-    xaxis_type='category',
-    yaxis=dict(
-        type='linear',
-        range=[1, 100],
-        ticksuffix='%')
-)
-st.plotly_chart(fig)
+fig_area_chart = create_area_chart(df=df_pct, chains=chains, title='Normalized daily Safe{Wallet} creation share')
+st.plotly_chart(fig_area_chart)
 
 st.text(body='Data daily Safe creation share')
 st.dataframe(data=df_pct, hide_index=True)
