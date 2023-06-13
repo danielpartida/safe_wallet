@@ -54,10 +54,11 @@ col4.metric("OP Safe{Wallet} Safes", series_wallet_absolute.optimism)
 with st.expander("See more chain metrics"):
     tab_relative, tab_absolute = st.tabs(["Relative metrics", "Absolute metrics"])
 
-    tab_relative.text(body='Average and median Safe creation share')
+    tab_relative.text(body='Average and median Safe creation share per chain')
     tab_relative.dataframe(data=df_results)
 
-    tab_absolute.text(body='Absolute numbers')
+    tab_absolute.text(body='Absolute number of Safes deployed per chain from {0} to {1}'.format(
+        min_date.strftime('%d-%m-%Y'), max_date.strftime('%d-%m-%Y')))
     tab_absolute.dataframe(data=pd.DataFrame(series_wallet_absolute, columns=['safes']))
 
 st.divider()
@@ -69,6 +70,7 @@ st.plotly_chart(fig_line_chart)
 fig_area_chart = create_area_chart(df=df_pct, chains=chains, title='Normalized daily Safe{Wallet} creation share')
 st.plotly_chart(fig_area_chart)
 
-st.text(body='Data daily Safe creation share')
-st.dataframe(data=df_pct, hide_index=True)
-st.caption(body='Note: 80% of people accept tracking on web. Hence, we scale the Google Analytics data')
+with st.expander("See daily creation share per chain"):
+    st.text(body='Data daily Safe creation share')
+    st.dataframe(data=df_pct, hide_index=True)
+    st.caption(body='Note: 80% of people accept tracking on web. Hence, we scale the Google Analytics data')
