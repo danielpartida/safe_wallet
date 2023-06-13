@@ -23,7 +23,7 @@ col_caption_1.caption('🚨 Data fetched from **{0}** to **{1}** 🚨'.format(mi
 col_caption_2.caption('🚨 We assume **80%** of users accept web tracking 🚨')
 
 
-st.subheader(body='Share of Safe{Wallet} creation',
+st.subheader(body='Metrics of Safe{Wallet} share creation',
              help='Google Analytics and Dune data as proxies')
 
 chains = ['ethereum', 'polygon', 'optimism', 'arbitrum']
@@ -60,6 +60,9 @@ with st.expander("See more chain metrics"):
 
     tab_absolute.text(body='Absolute numbers')
     tab_absolute.dataframe(data=pd.DataFrame(series_wallet_absolute, columns=['safes']))
+
+st.divider()
+st.subheader(body='Charts Safe{Wallet} share creation')
 
 fig_1 = create_line_chart(df=df_pct, columns=chains, title='Daily Safe creation share')
 st.plotly_chart(fig_1)
