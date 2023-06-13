@@ -27,17 +27,7 @@ col4.metric("Optimism", "{0:.2f}%".format(100*df_results['median'].iloc[3]), "{0
 st.text(body='Average and median Safe creation share')
 st.dataframe(data=df_results, hide_index=True)
 
-fig_1 = go.Figure()
-fig_1.add_trace(go.Scatter(x=df_pct.date, y=df_pct.ethereum, mode='lines', name='ethereum', line=dict(color='grey')))
-fig_1.add_trace(go.Scatter(x=df_pct.date, y=df_pct.polygon, mode='lines', name='polygon', line=dict(color='purple')))
-fig_1.add_trace(go.Scatter(x=df_pct.date, y=df_pct.arbitrum, mode='lines', name='arbitrum', line=dict(color='blue')))
-fig_1.add_trace(go.Scatter(x=df_pct.date, y=df_pct.optimism, mode='lines', name='optimism', line=dict(color='red')))
-fig_1.add_trace(go.Scatter(x=df_pct.date, y=df_pct.gnosis, mode='lines', name='gnosis', line=dict(color='green')))
-fig_1.add_trace(go.Scatter(x=df_pct.date, y=df_pct.avalanche, mode='lines', name='avalanche', line=dict(color='orange')))
-fig_1.update_layout(
-    title='Daily Safe creation share',
-    showlegend=True
-)
+fig_1 = create_line_chart(df=df_pct, columns=chains, title='Daily Safe creation share')
 st.plotly_chart(fig_1)
 
 
