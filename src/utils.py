@@ -15,7 +15,7 @@ def create_metrics_section(number_of_chains: int, chains_selected: list, df: pd.
             continue
 
         # Metrics for current chain
-        chain_share = df.loc[chain, 'median']
+        chain_share = df.loc[chain]
         chain_safes = series_absolute.loc[chain]
 
         short_names = {
@@ -46,3 +46,20 @@ def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Serie
         tab_daily.text(body='Data daily Safe creation share')
         tab_daily.dataframe(data=df_daily, hide_index=True)
         tab_daily.caption(body='Note: 80% of people accept tracking on web. Hence, we scale the Google Analytics data')
+
+
+def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, factor: float = 0.8) -> pd.DataFrame:
+    df_offchain /= factor
+
+    onchain_cols = set(df_onchain.columns)
+    offchain_cols = set(df_offchain.columns)
+
+    common_cols = list(onchain_cols.intersection(offchain_cols))
+
+    df_share = df_offchain[common_cols].div(df_onchain[common_cols])
+    df_share = df_share.round(2)
+
+    df_mean = df_share.mean(axis=0)
+    df_median = df_share.median(axis=0)
+
+    return df_share
