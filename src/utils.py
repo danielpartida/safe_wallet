@@ -1,10 +1,12 @@
+from datetime import datetime
+
 import pandas as pd
 import streamlit as st
 
 
 # TODO: Add monthly change to absolute numbers
 def create_metrics_section(number_of_chains: int, chains_selected: list, df: pd.DataFrame,
-                           series_absolute: pd.Series, median: float):
+                           series_absolute: pd.Series, median: float) -> st.columns:
 
     cols = st.columns(number_of_chains)
     for i, chain in enumerate(chains_selected):
@@ -27,3 +29,20 @@ def create_metrics_section(number_of_chains: int, chains_selected: list, df: pd.
         cols[i].metric("{0} SafeWallet Safes".format(short_names[chain]), chain_safes)
 
     return cols
+
+
+def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Series, df_daily: pd.DataFrame,
+                            min_date: datetime, max_date: datetime):
+    with st.expander("See more chain metrics"):
+        tab_relative, tab_absolute, tab_daily = st.tabs(["Relative metrics", "Absolute metrics", "Daily share"])
+
+        tab_relative.text(body='Average and median Safe creation share per chain')
+        tab_relative.dataframe(data=df_relative)
+
+        tab_absolute.text(body='Absolute number of Safes deployed per chain from {0} to {1}'.format(
+            min_date.strftime('%d-%m-%Y'), max_date.strftime('%d-%m-%Y')))
+        tab_absolute.dataframe(data=pd.DataFrame(series_absolute, columns=['safes']))
+
+        tab_daily.text(body='Data daily Safe creation share')
+        tab_daily.dataframe(data=df_daily, hide_index=True)
+        tab_daily.caption(body='Note: 80% of people accept tracking on web. Hence, we scale the Google Analytics data')
