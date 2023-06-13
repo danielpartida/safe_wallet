@@ -24,6 +24,8 @@ max_date = max(df_offchain_safes.index)
 df_share_daily = compute_daily_share(df_offchain=df_offchain_safes, df_onchain=df_onchain_safes)
 df_mean = df_share_daily.mean(axis=0)
 df_median = df_share_daily.median(axis=0)
+df_relative = pd.DataFrame(df_mean, columns=['mean'])
+df_relative['median'] = df_median
 
 # Streamlit part
 st.set_page_config(page_title='Safe{Wallet} share', page_icon='🔐', layout='wide', initial_sidebar_state='auto')
@@ -63,7 +65,7 @@ if page == "Safes created":
         create_metrics_section(number_of_chains=len(selected_chains), chains_selected=selected_chains,
                                df=df_median, series_absolute=series_wallet_absolute, median=median)
 
-        create_expander_section(df_relative=df_median, series_absolute=series_wallet_absolute, df_daily=df_share_daily,
+        create_expander_section(df_relative=df_relative, series_absolute=series_wallet_absolute, df_daily=df_share_daily,
                                 min_date=min_date, max_date=max_date)
 
         # Charts section

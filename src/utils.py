@@ -44,7 +44,7 @@ def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Serie
         tab_absolute.dataframe(data=pd.DataFrame(series_absolute, columns=['safes']))
 
         tab_daily.text(body='Data daily Safe creation share')
-        tab_daily.dataframe(data=df_daily, hide_index=True)
+        tab_daily.dataframe(data=df_daily)
         tab_daily.caption(body='Note: 80% of people accept tracking on web. Hence, we scale the Google Analytics data')
 
 
@@ -58,8 +58,5 @@ def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, fac
 
     df_share = df_offchain[common_cols].div(df_onchain[common_cols])
     df_share = df_share.round(2)
-
-    df_mean = df_share.mean(axis=0)
-    df_median = df_share.median(axis=0)
 
     return df_share
