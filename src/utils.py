@@ -58,5 +58,6 @@ def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, fac
 
     df_share = df_offchain[common_cols].div(df_onchain[common_cols])
     df_share = df_share.round(2)
+    df_share.index = df_share.index.date
 
     return df_share
