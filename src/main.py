@@ -2,21 +2,28 @@ import streamlit as st
 import pandas as pd
 
 from charts import create_line_chart, create_area_chart
-from read_data import read_config_file, get_offchain_tx, get_offchain_safes
-from utils import create_metrics_section, create_expander_section
+from read_data import read_config_file, get_offchain_data, get_onchain_data
+from utils import create_metrics_section, create_expander_section, compute_daily_share
 
 # Reading data
 config = read_config_file()
-column_mapping = {int(k): v for k, v in config['chain_id'].items()}
+column_mapping = {str(k): v for k, v in config['chain_id'].items()}
 
-df_pct_daily = pd.read_csv('data/df_pct_daily.csv')
-df_results = pd.read_csv('data/df_metrics.csv', index_col='chain')
-df_wallet = get_offchain_safes()
-df_offchain_tx = get_offchain_tx(column_mapping=column_mapping)
-df_wallet.index = pd.to_datetime(df_wallet.index, format='%Y%m%d')
-series_wallet_absolute = df_wallet.sum(axis=0)
-min_date = min(df_wallet.index)
-max_date = max(df_wallet.index)
+# Onchain data
+df_onchain_safes = get_onchain_data()
+
+# Offchain data
+df_offchain_safes = get_offchain_data(column_mapping=column_mapping, file='offchain_safes.csv')
+df_offchain_tx = get_offchain_data(column_mapping=column_mapping, file='offchain_tx_made.csv')
+df_offchain_safes.index = pd.to_datetime(df_offchain_safes.index, format='%Y%m%d')
+series_wallet_absolute = df_offchain_safes.sum(axis=0)
+min_date = min(df_offchain_safes.index)
+max_date = max(df_offchain_safes.index)
+
+# Calculate daily share
+df_share_daily = compute_daily_share(df_offchain=df_offchain_safes, df_onchain=df_onchain_safes)
+df_mean = df_share_daily.mean(axis=0)
+df_median = df_share_daily.median(axis=0)
 
 # Streamlit part
 st.set_page_config(page_title='Safe{Wallet} share', page_icon='🔐', layout='wide', initial_sidebar_state='auto')
@@ -39,33 +46,33 @@ if page == "Safes created":
         # Alerts section
         col_caption_1, col_caption_2 = st.columns(2)
         col_caption_1.caption('🚨 Data fetched from **{0}** to **{1}** 🚨'.format(min_date.strftime('%d-%m-%Y'),
-                                                                        max_date.strftime('%d-%m-%Y')))
+                                                                                max_date.strftime('%d-%m-%Y')))
         col_caption_2.caption('🚨 We assume **80%** of users accept web tracking 🚨')
 
         # Metrics section
         st.subheader(body='Metrics of Safe{Wallet} share creation',
                      help='Google Analytics and Dune data as proxies')
 
-        median = df_results.loc[selected_chains]['median'].median()
-        average = df_results.loc[selected_chains]['mean'].median()
+        median = df_median.loc[selected_chains].median()
+        average = df_mean.loc[selected_chains].median()
 
         col_median, col_avg = st.columns(2)
         col_median.metric("Median Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * median))
         col_avg.metric("Average Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * average))
 
         create_metrics_section(number_of_chains=len(selected_chains), chains_selected=selected_chains,
-                                             df=df_results, series_absolute=series_wallet_absolute, median=median)
+                               df=df_median, series_absolute=series_wallet_absolute, median=median)
 
-        create_expander_section(df_relative=df_results, series_absolute=series_wallet_absolute, df_daily=df_pct_daily,
+        create_expander_section(df_relative=df_median, series_absolute=series_wallet_absolute, df_daily=df_share_daily,
                                 min_date=min_date, max_date=max_date)
 
         # Charts section
         st.subheader(body='Charts Safe{Wallet} share creation')
 
-        fig_line_chart = create_line_chart(df=df_pct_daily, chains=selected_chains, title='Daily Safe creation share')
+        fig_line_chart = create_line_chart(df=df_share_daily, chains=selected_chains, title='Daily Safe creation share')
         st.plotly_chart(fig_line_chart)
 
-        fig_area_chart = create_area_chart(df=df_pct_daily, chains=selected_chains,
+        fig_area_chart = create_area_chart(df=df_share_daily, chains=selected_chains,
                                            title='Normalized daily Safe{Wallet} creation share')
         st.plotly_chart(fig_area_chart)
 
