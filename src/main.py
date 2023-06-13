@@ -2,12 +2,17 @@ import streamlit as st
 import pandas as pd
 
 from charts import create_line_chart, create_area_chart
+from read_data import read_config_file, get_offchain_tx, get_offchain_safes
 from utils import create_metrics_section, create_expander_section
 
 # Reading data
-df_pct = pd.read_csv('data/df_pct.csv')
-df_results = pd.read_csv('data/df_result.csv', index_col='chain')
-df_wallet = pd.read_csv('data/offchain.csv', index_col='date')
+config = read_config_file()
+column_mapping = {int(k): v for k, v in config['chain_id'].items()}
+
+df_pct_daily = pd.read_csv('data/df_pct_daily.csv')
+df_results = pd.read_csv('data/df_metrics.csv', index_col='chain')
+df_wallet = get_offchain_safes()
+df_offchain_tx = get_offchain_tx(column_mapping=column_mapping)
 df_wallet.index = pd.to_datetime(df_wallet.index, format='%Y%m%d')
 series_wallet_absolute = df_wallet.sum(axis=0)
 min_date = min(df_wallet.index)
@@ -51,16 +56,16 @@ if page == "Safes created":
         create_metrics_section(number_of_chains=len(selected_chains), chains_selected=selected_chains,
                                              df=df_results, series_absolute=series_wallet_absolute, median=median)
 
-        create_expander_section(df_relative=df_results, series_absolute=series_wallet_absolute, df_daily=df_pct,
+        create_expander_section(df_relative=df_results, series_absolute=series_wallet_absolute, df_daily=df_pct_daily,
                                 min_date=min_date, max_date=max_date)
 
         # Charts section
         st.subheader(body='Charts Safe{Wallet} share creation')
 
-        fig_line_chart = create_line_chart(df=df_pct, chains=selected_chains, title='Daily Safe creation share')
+        fig_line_chart = create_line_chart(df=df_pct_daily, chains=selected_chains, title='Daily Safe creation share')
         st.plotly_chart(fig_line_chart)
 
-        fig_area_chart = create_area_chart(df=df_pct, chains=selected_chains,
+        fig_area_chart = create_area_chart(df=df_pct_daily, chains=selected_chains,
                                            title='Normalized daily Safe{Wallet} creation share')
         st.plotly_chart(fig_area_chart)
 
