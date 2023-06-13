@@ -9,7 +9,7 @@ df_pct = pd.read_csv('data/df_pct.csv')
 df_results = pd.read_csv('data/df_result.csv', index_col='chain')
 df_wallet = pd.read_csv('data/offchain.csv', index_col='date')
 df_wallet.index = pd.to_datetime(df_wallet.index, format='%Y%m%d')
-df_wallet_absolute = df_wallet.sum(axis=0)
+series_wallet_absolute = df_wallet.sum(axis=0)
 
 # Streamlit part
 st.title('Safe{Wallet} vs other interfaces')
@@ -27,19 +27,25 @@ col_avg.metric("Average Safe{Wallet} share crosschain", '{0:.2f}%'.format(100*av
 # TODO: Add monthly change to absolute numbers
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("ETH Safe{Wallet} share", "{0:.2f}%".format(100*df_results['median'].ethereum), "{0:.2f}%".format(100*(df_results['median'].ethereum-median)))
-col1.metric("ETH Safe{Wallet} Safes", df_wallet_absolute.ethereum)
+col1.metric("ETH Safe{Wallet} Safes", series_wallet_absolute.ethereum)
 
 col2.metric("MATIC Safe{Wallet} share", "{0:.2f}%".format(100*df_results['median'].polygon), "{0:.2f}%".format(100*(df_results['median'].polygon-median)))
-col2.metric("MATIC Safe{Wallet} Safes", df_wallet_absolute.polygon)
+col2.metric("MATIC Safe{Wallet} Safes", series_wallet_absolute.polygon)
 
 col3.metric("ARB Safe{Wallet} share", "{0:.2f}%".format(100*df_results['median'].arbitrum), "{0:.2f}%".format(100*(df_results['median'].arbitrum-median)))
-col3.metric("ARB Safe{Wallet} Safes", df_wallet_absolute.arbitrum)
+col3.metric("ARB Safe{Wallet} Safes", series_wallet_absolute.arbitrum)
 
 col4.metric("OP Safe{Wallet} share", "{0:.2f}%".format(100*df_results['median'].optimism), "{0:.2f}%".format(100*(df_results['median'].optimism-median)))
-col4.metric("OP Safe{Wallet} Safes", df_wallet_absolute.optimism)
+col4.metric("OP Safe{Wallet} Safes", series_wallet_absolute.optimism)
 
-st.text(body='Average and median Safe creation share')
-st.dataframe(data=df_results)
+with st.expander("See more chains"):
+    col_relative, col_absolute = st.columns(2)
+
+    col_relative.text(body='Average and median Safe creation share')
+    col_relative.dataframe(data=df_results)
+
+    col_absolute.text(body='Absolute numbers')
+    col_absolute.dataframe(data=pd.DataFrame(series_wallet_absolute, columns=['safes']))
 
 fig_1 = create_line_chart(df=df_pct, columns=chains, title='Daily Safe creation share')
 st.plotly_chart(fig_1)
