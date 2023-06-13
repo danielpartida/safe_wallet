@@ -2,20 +2,31 @@ import yaml
 import pandas as pd
 
 
-def read_config_file(filepath: str = 'data/config.yaml'):
+def read_config_file(filepath: str = 'data/config.yml'):
     with open(filepath, 'r') as file:
         config = yaml.safe_load(file)
     return config
 
 
-def get_offchain_tx(column_mapping: dict, file_path: str = 'data/offchain_tx_made.csv') -> pd.DataFrame:
+def get_offchain_data(column_mapping: dict, file: str, path: str = 'data/') -> pd.DataFrame:
+    file_path = path + file
     df = pd.read_csv(file_path, index_col='date')
-    df.rename(columns=column_mapping, inplace=True)
+
+    if bool(column_mapping):
+        df.rename(columns=column_mapping, inplace=True)
 
     return df
 
 
-def get_offchain_safes(file_path: str = 'data/offchain_safes.csv') -> pd.DataFrame:
-    df = pd.read_csv(file_path, index_col='date')
+def get_onchain_data(file_path: str = 'data/dune_safes.csv') -> pd.DataFrame:
+    df = pd.read_csv(file_path)
+    df = df.pivot(index='date', columns='blockchain', values='created_safes')
+
+    # If there are any NaN values you might want to fill them with a suitable value, e.g., 0
+    df.fillna(0, inplace=True)
+
+    df.index = pd.to_datetime(df.index, format="%Y-%m-%d")
+
+    df.rename(columns={'avalanche_c': 'avalanche'}, inplace=True)
 
     return df
