@@ -14,46 +14,51 @@ min_date = min(df_wallet.index)
 max_date = max(df_wallet.index)
 
 # Streamlit part
-st.set_page_config(page_title='Safe{Wallet} share', page_icon='🔐', initial_sidebar_state='auto')
-st.title('Safe{Wallet} vs other interfaces')
+st.set_page_config(page_title='Safe{Wallet} share', page_icon='🔐', layout='wide', initial_sidebar_state='auto')
 
-# Alerts section
-col_caption_1, col_caption_2 = st.columns(2)
-col_caption_1.caption('🚨 Data fetched from **{0}** to **{1}** 🚨'.format(min_date.strftime('%d-%m-%Y'),
-                                                                        max_date.strftime('%d-%m-%Y')))
-col_caption_2.caption('🚨 We assume **80%** of users accept web tracking 🚨')
+# Sidebar section
+st.sidebar.title("Menu")
+page = st.sidebar.radio("Select your page", ("Safes created", "tx made"))
 
-st.divider()
+if page == "Safes created":
+    st.title('Safe{Wallet} vs other interfaces')
 
-chains_options = ['ethereum', 'polygon', 'arbitrum', 'optimism', 'gnosis', 'avalanche', 'bnb']
-default_chains = ['ethereum', 'polygon', 'arbitrum', 'optimism']
-selected_chains = st.multiselect('Select chains', chains_options, default=default_chains)
+    chains_options = ['ethereum', 'polygon', 'arbitrum', 'optimism', 'gnosis', 'avalanche', 'bnb']
+    default_chains = ['ethereum', 'polygon', 'arbitrum', 'optimism']
+    selected_chains = st.sidebar.multiselect('Select chains', chains_options, default=default_chains)
 
-# Metrics section
-st.subheader(body='Metrics of Safe{Wallet} share creation',
-             help='Google Analytics and Dune data as proxies')
+    # Alerts section
+    st.caption('🚨 Data fetched from **{0}** to **{1}** 🚨'.format(min_date.strftime('%d-%m-%Y'),
+                                                                    max_date.strftime('%d-%m-%Y')))
+    st.caption('🚨 We assume **80%** of users accept web tracking 🚨')
 
-median = df_results.loc[selected_chains]['median'].median()
-average = df_results.loc[selected_chains]['mean'].median()
+    # Metrics section
+    st.subheader(body='Metrics of Safe{Wallet} share creation',
+                 help='Google Analytics and Dune data as proxies')
 
-col_median, col_avg = st.columns(2)
-col_median.metric("Median Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * median))
-col_avg.metric("Average Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * average))
+    median = df_results.loc[selected_chains]['median'].median()
+    average = df_results.loc[selected_chains]['mean'].median()
 
-cols_metric = create_metrics_section(number_of_chains=len(selected_chains), chains_selected=selected_chains,
-                                     df=df_results, series_absolute=series_wallet_absolute, median=median)
+    col_median, col_avg = st.columns(2)
+    col_median.metric("Median Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * median))
+    col_avg.metric("Average Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * average))
 
-create_expander_section(df_relative=df_results, series_absolute=series_wallet_absolute, df_daily=df_pct,
-                        min_date=min_date, max_date=max_date)
+    create_metrics_section(number_of_chains=len(selected_chains), chains_selected=selected_chains,
+                                         df=df_results, series_absolute=series_wallet_absolute, median=median)
 
-st.divider()
+    create_expander_section(df_relative=df_results, series_absolute=series_wallet_absolute, df_daily=df_pct,
+                            min_date=min_date, max_date=max_date)
 
-# Charts section
-st.subheader(body='Charts Safe{Wallet} share creation')
+    # Charts section
+    st.subheader(body='Charts Safe{Wallet} share creation')
 
-fig_line_chart = create_line_chart(df=df_pct, chains=selected_chains, title='Daily Safe creation share')
-st.plotly_chart(fig_line_chart)
+    fig_line_chart = create_line_chart(df=df_pct, chains=selected_chains, title='Daily Safe creation share')
+    st.plotly_chart(fig_line_chart)
 
-fig_area_chart = create_area_chart(df=df_pct, chains=selected_chains,
-                                   title='Normalized daily Safe{Wallet} creation share')
-st.plotly_chart(fig_area_chart)
+    fig_area_chart = create_area_chart(df=df_pct, chains=selected_chains,
+                                       title='Normalized daily Safe{Wallet} creation share')
+    st.plotly_chart(fig_area_chart)
+
+elif page == "tx made":
+    st.title('Transactions made')
+    # Fill this section with your content
