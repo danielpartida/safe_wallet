@@ -1,5 +1,4 @@
 streamlit
 pandas
 plotly
-pyyaml
-yaml
+PyYAML==5.4.1
