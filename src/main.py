@@ -27,37 +27,42 @@ if page == "Safes created":
     default_chains = ['ethereum', 'polygon', 'arbitrum', 'optimism']
     selected_chains = st.sidebar.multiselect('Select chains', chains_options, default=default_chains)
 
-    # Alerts section
-    st.caption('🚨 Data fetched from **{0}** to **{1}** 🚨'.format(min_date.strftime('%d-%m-%Y'),
-                                                                    max_date.strftime('%d-%m-%Y')))
-    st.caption('🚨 We assume **80%** of users accept web tracking 🚨')
+    if not selected_chains:  # Check if list is empty
+        st.error('Please select at least one chain from the sidebar.')
 
-    # Metrics section
-    st.subheader(body='Metrics of Safe{Wallet} share creation',
-                 help='Google Analytics and Dune data as proxies')
+    else:
+        # Alerts section
+        col_caption_1, col_caption_2 = st.columns(2)
+        col_caption_1.caption('🚨 Data fetched from **{0}** to **{1}** 🚨'.format(min_date.strftime('%d-%m-%Y'),
+                                                                        max_date.strftime('%d-%m-%Y')))
+        col_caption_2.caption('🚨 We assume **80%** of users accept web tracking 🚨')
 
-    median = df_results.loc[selected_chains]['median'].median()
-    average = df_results.loc[selected_chains]['mean'].median()
+        # Metrics section
+        st.subheader(body='Metrics of Safe{Wallet} share creation',
+                     help='Google Analytics and Dune data as proxies')
 
-    col_median, col_avg = st.columns(2)
-    col_median.metric("Median Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * median))
-    col_avg.metric("Average Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * average))
+        median = df_results.loc[selected_chains]['median'].median()
+        average = df_results.loc[selected_chains]['mean'].median()
 
-    create_metrics_section(number_of_chains=len(selected_chains), chains_selected=selected_chains,
-                                         df=df_results, series_absolute=series_wallet_absolute, median=median)
+        col_median, col_avg = st.columns(2)
+        col_median.metric("Median Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * median))
+        col_avg.metric("Average Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * average))
 
-    create_expander_section(df_relative=df_results, series_absolute=series_wallet_absolute, df_daily=df_pct,
-                            min_date=min_date, max_date=max_date)
+        create_metrics_section(number_of_chains=len(selected_chains), chains_selected=selected_chains,
+                                             df=df_results, series_absolute=series_wallet_absolute, median=median)
 
-    # Charts section
-    st.subheader(body='Charts Safe{Wallet} share creation')
+        create_expander_section(df_relative=df_results, series_absolute=series_wallet_absolute, df_daily=df_pct,
+                                min_date=min_date, max_date=max_date)
 
-    fig_line_chart = create_line_chart(df=df_pct, chains=selected_chains, title='Daily Safe creation share')
-    st.plotly_chart(fig_line_chart)
+        # Charts section
+        st.subheader(body='Charts Safe{Wallet} share creation')
 
-    fig_area_chart = create_area_chart(df=df_pct, chains=selected_chains,
-                                       title='Normalized daily Safe{Wallet} creation share')
-    st.plotly_chart(fig_area_chart)
+        fig_line_chart = create_line_chart(df=df_pct, chains=selected_chains, title='Daily Safe creation share')
+        st.plotly_chart(fig_line_chart)
+
+        fig_area_chart = create_area_chart(df=df_pct, chains=selected_chains,
+                                           title='Normalized daily Safe{Wallet} creation share')
+        st.plotly_chart(fig_area_chart)
 
 elif page == "tx made":
     st.title('Transactions made')
