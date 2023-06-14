@@ -1,21 +1,22 @@
 from datetime import datetime
+from typing import Tuple
 
 import pandas as pd
 import streamlit as st
 
 
 # TODO: Add monthly change to absolute numbers
-def create_metrics_section(number_of_chains: int, chains_selected: list, df: pd.DataFrame,
+def create_metrics_section(number_of_chains: int, chains_selected: list, series_median: pd.Series,
                            series_absolute: pd.Series, median: float) -> st.columns:
 
     cols = st.columns(number_of_chains)
     for i, chain in enumerate(chains_selected):
-        if chain not in df.index or chain not in series_absolute.index:
+        if chain not in series_median.index or chain not in series_absolute.index:
             st.error("Chain {0} not found in data".format(chain))
             continue
 
         # Metrics for current chain
-        chain_share = df.loc[chain]
+        chain_share = series_median.loc[chain]
         chain_safes = series_absolute.loc[chain]
 
         short_names = {
@@ -48,7 +49,9 @@ def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Serie
         tab_daily.caption(body='Note: 80% of people accept tracking on web. Hence, we scale the Google Analytics data')
 
 
-def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, factor: float = 0.8) -> pd.DataFrame:
+def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, factor: float = 0.8) -> \
+        Tuple[pd.DataFrame, pd.Series, pd.Series, pd.DataFrame]:
+
     df_offchain /= factor
 
     onchain_cols = set(df_onchain.columns)
@@ -59,5 +62,12 @@ def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, fac
     df_share = df_offchain[common_cols].div(df_onchain[common_cols])
     df_share = df_share.round(2)
     df_share.index = df_share.index.date
+    df_share.dropna(inplace=True)
 
-    return df_share
+    series_mean = df_share.mean(axis=0)
+    series_median = df_share.median(axis=0)
+
+    df_relative = pd.DataFrame(series_mean, columns=['mean'])
+    df_relative['median'] = series_median
+
+    return df_share, series_mean, series_median, df_relative
