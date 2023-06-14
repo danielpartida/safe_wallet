@@ -18,14 +18,14 @@ def get_offchain_data(column_mapping: dict, file: str, path: str = 'data/') -> p
     return df
 
 
-def get_onchain_data(file_path: str = 'data/dune_safes.csv') -> pd.DataFrame:
+def get_onchain_data(file_path: str, values: str) -> pd.DataFrame:
     df = pd.read_csv(file_path)
-    df = df.pivot(index='date', columns='blockchain', values='created_safes')
+    df = df.pivot(index='date', columns='blockchain', values=values)
 
     # If there are any NaN values you might want to fill them with a suitable value, e.g., 0
     df.fillna(0, inplace=True)
 
-    df.index = pd.to_datetime(df.index, format="%Y-%m-%d")
+    df.index = pd.to_datetime(df.index)
 
     df.rename(columns={'avalanche_c': 'avalanche'}, inplace=True)
 

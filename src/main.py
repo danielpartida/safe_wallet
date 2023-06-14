@@ -10,7 +10,8 @@ config = read_config_file()
 column_mapping = {str(k): v for k, v in config['chain_id'].items()}
 
 # Onchain data
-df_onchain_safes = get_onchain_data()
+df_onchain_safes = get_onchain_data(file_path='data/dune_safes.csv', values='created_safes')
+df_onchain_tx = get_onchain_data(file_path='data/dune_tx_made.csv', values='safe_txs')
 
 # Offchain data
 df_offchain_safes = get_offchain_data(column_mapping=column_mapping, file='offchain_safes.csv')
