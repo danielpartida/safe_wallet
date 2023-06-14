@@ -14,10 +14,10 @@ df_onchain_safes = get_onchain_data(file_path='data/dune_safes.csv', values='cre
 df_onchain_tx = get_onchain_data(file_path='data/dune_tx_made.csv', values='safe_txs')
 
 # Offchain data
-df_offchain_safes = get_offchain_data(column_mapping=column_mapping, file='offchain_safes.csv')
-df_offchain_tx = get_offchain_data(column_mapping=column_mapping, file='offchain_tx_made.csv')
-df_offchain_safes.index = pd.to_datetime(df_offchain_safes.index, format='%Y%m%d')
-series_wallet_absolute = df_offchain_safes.sum(axis=0)
+df_offchain_safes, series_offchain_sum_safes = get_offchain_data(column_mapping=column_mapping,
+                                                                 file='offchain_safes.csv')
+df_offchain_tx, series_offchain_sum_tx = get_offchain_data(column_mapping=column_mapping, file='offchain_tx_made.csv')
+
 min_date = min(df_offchain_safes.index)
 max_date = max(df_offchain_safes.index)
 
@@ -64,9 +64,9 @@ if page == "Safes created":
         col_avg.metric("Average Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * average))
 
         create_metrics_section(number_of_chains=len(selected_chains), chains_selected=selected_chains,
-                               df=df_median, series_absolute=series_wallet_absolute, median=median)
+                               df=df_median, series_absolute=series_offchain_sum_safes, median=median)
 
-        create_expander_section(df_relative=df_relative, series_absolute=series_wallet_absolute, df_daily=df_share_daily,
+        create_expander_section(df_relative=df_relative, series_absolute=series_offchain_sum_safes, df_daily=df_share_daily,
                                 min_date=min_date, max_date=max_date)
 
         # Charts section
