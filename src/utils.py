@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Tuple
 
 import pandas as pd
@@ -71,3 +71,23 @@ def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, fac
     df_relative['median'] = series_median
 
     return df_share, series_mean, series_median, df_relative
+
+
+def display_no_chains_message() -> st.error:
+    return st.error('Please select at least one chain from the sidebar.')
+
+
+def display_dates_range(col, min_date: date, max_date: date) -> st.caption:
+    message = '🚨 Data fetched from **{0}** to **{1}** 🚨'.format(min_date.strftime('%d-%m-%Y'),
+                                                      max_date.strftime('%d-%m-%Y'))
+    return col.caption(message)
+
+
+def display_tracking_assumption(col) -> st.caption:
+    return col.caption('🚨 We assume **80%** of users accept web tracking 🚨')
+
+
+def build_alerts_section(min_date: date, max_date: date):
+    col_caption_1, col_caption_2 = st.columns(2)
+    display_dates_range(col=col_caption_1, min_date=min_date, max_date=max_date)
+    display_tracking_assumption(col=col_caption_2)
