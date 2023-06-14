@@ -90,4 +90,23 @@ elif page == "tx made":
         display_no_chains_message()
 
     else:
+        # Alerts section
         build_alerts_section(min_date=min_safes_date, max_date=max_safes_date)
+
+        # Metrics section
+        st.subheader(body='Metrics of Safe{Wallet} share tx made',
+                     help='Google Analytics and Dune data as proxies')
+
+        median = series_tx_median.loc[selected_chains].median()
+        average = series_tx_mean.loc[selected_chains].median()
+
+        col_median, col_avg = st.columns(2)
+        col_median.metric("Median Safe{Wallet} share tx_made crosschain", '{0:.2f}%'.format(100 * median))
+        col_avg.metric("Average Safe{Wallet} share tx_made crosschain", '{0:.2f}%'.format(100 * average))
+
+        create_metrics_section(
+            number_of_chains=len(selected_chains), chains_selected=selected_chains, series_median=series_tx_median,
+            series_absolute=series_offchain_sum_tx, median=median)
+
+        create_expander_section(df_relative=df_tx_relative, series_absolute=series_offchain_sum_tx,
+                                df_daily=df_tx_share_daily, min_date=min_tx_date, max_date=max_tx_date)

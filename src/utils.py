@@ -83,8 +83,8 @@ def display_dates_range(col, min_date: date, max_date: date) -> st.caption:
     return col.caption(message)
 
 
-def display_tracking_assumption(col) -> st.caption:
-    return col.caption('🚨 We assume **80%** of users accept web tracking 🚨')
+def display_tracking_assumption(col, tracking_parameter: float = 0.8) -> st.caption:
+    return col.caption('🚨 We assume **{0:.2f}%** of users accept web tracking 🚨'.format(tracking_parameter))
 
 
 def build_alerts_section(min_date: date, max_date: date):
