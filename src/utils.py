@@ -83,20 +83,20 @@ def display_no_chains_message() -> st.error:
     return st.error('Please select at least one chain from the sidebar.')
 
 
-def display_dates_range(col, min_date: date, max_date: date) -> st.caption:
-    message = '🚨 Data fetched from **{0}** to **{1}** 🚨'.format(min_date.strftime('%d-%m-%Y'),
-                                                      max_date.strftime('%d-%m-%Y'))
-    return col.caption(message)
-
-
-def display_tracking_assumption(col, tracking_parameter: float = 0.8) -> st.caption:
-    return col.caption('🚨 We assume **{0:.2f}%** of users accept web tracking 🚨'.format(tracking_parameter))
-
-
-def build_alerts_section(min_date: date, max_date: date):
+def build_alerts_section(min_date: date, max_date: date, dune_query_link: str, type: str,
+                         tracking_parameter: float = 0.8):
     col_caption_1, col_caption_2 = st.columns(2)
-    display_dates_range(col=col_caption_1, min_date=min_date, max_date=max_date)
-    display_tracking_assumption(col=col_caption_2)
+
+    message_dates = '🚨 Data fetched from **{0}** to **{1}** 🚨'.format(min_date.strftime('%d-%m-%Y'),
+                                                                max_date.strftime('%d-%m-%Y'))
+    col_caption_1.caption(message_dates)
+
+    message_tracking = '🚨 We assume **{0:.2f}%** of users accept web tracking 🚨'.format(tracking_parameter)
+    col_caption_2.caption(message_tracking)
+
+    google_analytics_link = 'https://analytics.google.com/analytics/web/#/analysis/p308247657/edit/K8gMuB_rR9S7iXz0JhhJ_w'
+    col_caption_1.caption("[Google Analytics link](%s)" % google_analytics_link)
+    col_caption_2.caption("[Dune {0} link query](%s)".format(type) % dune_query_link)
 
 
 def display_metrics_subheader(type: str) -> st.subheader:

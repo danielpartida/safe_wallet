@@ -49,11 +49,13 @@ if page == "Safes created":
         display_no_chains_message()
 
     else:
+        metric_type = 'creation'
+
         # Alerts section
-        build_alerts_section(min_date=min_safes_date, max_date=max_safes_date)
+        build_alerts_section(min_date=min_safes_date, max_date=max_safes_date,
+                             dune_query_link="https://dune.com/queries/2632388", type=metric_type)
 
         # Metrics section
-        metric_type = 'creation'
         display_metrics_subheader(type=metric_type)
 
         create_metrics_section(
@@ -83,11 +85,13 @@ elif page == "tx made":
         display_no_chains_message()
 
     else:
+        metric_type = 'tx_made'
+
         # Alerts section
-        build_alerts_section(min_date=min_safes_date, max_date=max_safes_date)
+        build_alerts_section(min_date=min_safes_date, max_date=max_safes_date,
+                             dune_query_link="https://dune.com/queries/2604616", type=metric_type)
 
         # Metrics section
-        metric_type = 'tx_made'
         display_metrics_subheader(type=metric_type)
 
         create_metrics_section(
