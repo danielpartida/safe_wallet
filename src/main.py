@@ -3,7 +3,7 @@ import streamlit as st
 from charts import create_line_chart, create_area_chart
 from read_data import read_config_file, get_offchain_data, get_onchain_data
 from utils import (create_metrics_section, create_expander_section, compute_daily_share, display_no_chains_message,
-                   build_alerts_section, display_metrics_subheader)
+                   build_alerts_section, display_metrics_subheader, display_charts_subheader)
 
 # Reading data
 config = read_config_file()
@@ -64,7 +64,7 @@ if page == "Safes created":
                                 df_daily=df_safes_share_daily, min_date=min_safes_date, max_date=max_safes_date)
 
         # Charts section
-        st.subheader(body='Charts Safe{Wallet} share creation')
+        display_charts_subheader(type=metric_type)
 
         fig_line_chart = create_line_chart(df=df_safes_share_daily, chains=selected_chains,
                                            title='Daily Safe creation share')
@@ -96,4 +96,13 @@ elif page == "tx made":
 
         create_expander_section(df_relative=df_tx_relative, series_absolute=series_offchain_sum_tx,
                                 df_daily=df_tx_share_daily, min_date=min_tx_date, max_date=max_tx_date)
-        
+
+        display_charts_subheader(type=metric_type)
+
+        fig_line_chart = create_line_chart(df=df_tx_share_daily, chains=selected_chains,
+                                           title='Daily Safe tx made share')
+        st.plotly_chart(fig_line_chart)
+
+        fig_area_chart = create_area_chart(df=df_tx_share_daily, chains=selected_chains,
+                                           title='Normalized daily Safe{Wallet} tx made share')
+        st.plotly_chart(fig_area_chart)

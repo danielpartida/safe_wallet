@@ -102,3 +102,7 @@ def build_alerts_section(min_date: date, max_date: date):
 def display_metrics_subheader(type: str) -> st.subheader:
     return st.subheader(body='Metrics of SafeWallet share {0}'.format(type),
                         help='Google Analytics and Dune data as proxies')
+
+
+def display_charts_subheader(type: str) -> st.subheader:
+    return st.subheader(body='Charts SafeWallet share {0}'.format(type))
