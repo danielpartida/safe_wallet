@@ -60,7 +60,7 @@ if page == "Safes created":
 
         create_metrics_section(
             number_of_chains=len(selected_chains), chains_selected=selected_chains, series_median=series_safes_median,
-            series_mean=series_safes_mean, series_absolute=series_offchain_sum_safes)
+            series_mean=series_safes_mean, series_absolute=series_offchain_sum_safes, type=metric_type)
 
         create_expander_section(df_relative=df_safes_relative, series_absolute=series_offchain_sum_safes,
                                 df_daily=df_safes_share_daily, min_date=min_safes_date, max_date=max_safes_date)
@@ -96,7 +96,7 @@ elif page == "tx made":
 
         create_metrics_section(
             number_of_chains=len(selected_chains), chains_selected=selected_chains, series_median=series_tx_median,
-            series_mean=series_tx_mean, series_absolute=series_offchain_sum_tx)
+            series_mean=series_tx_mean, series_absolute=series_offchain_sum_tx, type=metric_type)
 
         create_expander_section(df_relative=df_tx_relative, series_absolute=series_offchain_sum_tx,
                                 df_daily=df_tx_share_daily, min_date=min_tx_date, max_date=max_tx_date)

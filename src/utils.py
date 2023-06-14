@@ -7,7 +7,7 @@ import streamlit as st
 
 # TODO: Add monthly change to absolute numbers
 def create_metrics_section(number_of_chains: int, chains_selected: list, series_median: pd.Series,
-                           series_mean: pd.Series, series_absolute: pd.Series):
+                           series_mean: pd.Series, series_absolute: pd.Series, type: str):
 
     median = series_median.loc[chains_selected].median()
     average = series_mean.loc[chains_selected].median()
@@ -33,9 +33,17 @@ def create_metrics_section(number_of_chains: int, chains_selected: list, series_
         }
 
         # Detailed metrics subsection
-        cols[i].metric("{0} SafeWallet share".format(short_names[chain]), "{0:.2f}%".format(100 * chain_share),
+        cols[i].metric("{0} SafeWallet {1} share".format(short_names[chain], type), "{0:.2f}%".format(100 * chain_share),
                        "{0:.2f}%".format(100 * (chain_share - median)))
-        cols[i].metric("{0} SafeWallet Safes".format(short_names[chain]), chain_safes)
+
+        if type == 'creation':
+            cols[i].metric("{0} SafeWallet Safes".format(short_names[chain]), chain_safes)
+
+        elif type == 'tx_made':
+            cols[i].metric("{0} SafeWallet tx made".format(short_names[chain]), chain_safes)
+
+        else:
+            cols[i].error("No metric type found")
 
 
 def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Series, df_daily: pd.DataFrame,
