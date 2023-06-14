@@ -3,7 +3,7 @@ import streamlit as st
 from charts import create_line_chart, create_area_chart
 from read_data import read_config_file, get_offchain_data, get_onchain_data
 from utils import (create_metrics_section, create_expander_section, compute_daily_share, display_no_chains_message,
-                   build_alerts_section)
+                   build_alerts_section, display_metrics_subheader)
 
 # Reading data
 config = read_config_file()
@@ -53,19 +53,12 @@ if page == "Safes created":
         build_alerts_section(min_date=min_safes_date, max_date=max_safes_date)
 
         # Metrics section
-        st.subheader(body='Metrics of Safe{Wallet} share creation',
-                     help='Google Analytics and Dune data as proxies')
-
-        median = series_safes_median.loc[selected_chains].median()
-        average = series_safes_mean.loc[selected_chains].median()
-
-        col_median, col_avg = st.columns(2)
-        col_median.metric("Median Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * median))
-        col_avg.metric("Average Safe{Wallet} share crosschain", '{0:.2f}%'.format(100 * average))
+        metric_type = 'creation'
+        display_metrics_subheader(type=metric_type)
 
         create_metrics_section(
             number_of_chains=len(selected_chains), chains_selected=selected_chains, series_median=series_safes_median,
-            series_absolute=series_offchain_sum_safes, median=median)
+            series_mean=series_safes_mean, series_absolute=series_offchain_sum_safes)
 
         create_expander_section(df_relative=df_safes_relative, series_absolute=series_offchain_sum_safes,
                                 df_daily=df_safes_share_daily, min_date=min_safes_date, max_date=max_safes_date)
@@ -94,19 +87,13 @@ elif page == "tx made":
         build_alerts_section(min_date=min_safes_date, max_date=max_safes_date)
 
         # Metrics section
-        st.subheader(body='Metrics of Safe{Wallet} share tx made',
-                     help='Google Analytics and Dune data as proxies')
-
-        median = series_tx_median.loc[selected_chains].median()
-        average = series_tx_mean.loc[selected_chains].median()
-
-        col_median, col_avg = st.columns(2)
-        col_median.metric("Median Safe{Wallet} share tx_made crosschain", '{0:.2f}%'.format(100 * median))
-        col_avg.metric("Average Safe{Wallet} share tx_made crosschain", '{0:.2f}%'.format(100 * average))
+        metric_type = 'tx_made'
+        display_metrics_subheader(type=metric_type)
 
         create_metrics_section(
             number_of_chains=len(selected_chains), chains_selected=selected_chains, series_median=series_tx_median,
-            series_absolute=series_offchain_sum_tx, median=median)
+            series_mean=series_tx_mean, series_absolute=series_offchain_sum_tx)
 
         create_expander_section(df_relative=df_tx_relative, series_absolute=series_offchain_sum_tx,
                                 df_daily=df_tx_share_daily, min_date=min_tx_date, max_date=max_tx_date)
+        

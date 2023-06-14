@@ -7,7 +7,15 @@ import streamlit as st
 
 # TODO: Add monthly change to absolute numbers
 def create_metrics_section(number_of_chains: int, chains_selected: list, series_median: pd.Series,
-                           series_absolute: pd.Series, median: float) -> st.columns:
+                           series_mean: pd.Series, series_absolute: pd.Series):
+
+    median = series_median.loc[chains_selected].median()
+    average = series_mean.loc[chains_selected].median()
+
+    # General metrics subsection
+    col_median, col_avg = st.columns(2)
+    col_median.metric("Median SafeWallet share {0} crosschain".format(type), '{0:.2f}%'.format(100 * median))
+    col_avg.metric("Average SafeWallet share {0} made crosschain".format(type), '{0:.2f}%'.format(100 * average))
 
     cols = st.columns(number_of_chains)
     for i, chain in enumerate(chains_selected):
@@ -24,12 +32,10 @@ def create_metrics_section(number_of_chains: int, chains_selected: list, series_
             'bnb': 'BNB', 'avalanche': 'AVAX'
         }
 
-        # Display metrics
+        # Detailed metrics subsection
         cols[i].metric("{0} SafeWallet share".format(short_names[chain]), "{0:.2f}%".format(100 * chain_share),
                        "{0:.2f}%".format(100 * (chain_share - median)))
         cols[i].metric("{0} SafeWallet Safes".format(short_names[chain]), chain_safes)
-
-    return cols
 
 
 def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Series, df_daily: pd.DataFrame,
@@ -91,3 +97,8 @@ def build_alerts_section(min_date: date, max_date: date):
     col_caption_1, col_caption_2 = st.columns(2)
     display_dates_range(col=col_caption_1, min_date=min_date, max_date=max_date)
     display_tracking_assumption(col=col_caption_2)
+
+
+def display_metrics_subheader(type: str) -> st.subheader:
+    return st.subheader(body='Metrics of SafeWallet share {0}'.format(type),
+                        help='Google Analytics and Dune data as proxies')
