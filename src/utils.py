@@ -99,7 +99,7 @@ def build_alerts_section(min_date: date, max_date: date, dune_query_link: str, t
                                                                 max_date.strftime('%d-%m-%Y'))
     col_caption_1.caption(message_dates)
 
-    message_tracking = '🚨 We assume **{0:.2f}%** of users accept web tracking 🚨'.format(tracking_parameter)
+    message_tracking = '🚨 We assume **{0:.2f}%** of users accept web tracking 🚨'.format(tracking_parameter*100)
     col_caption_2.caption(message_tracking)
 
     google_analytics_link = 'https://analytics.google.com/analytics/web/#/analysis/p308247657/edit/K8gMuB_rR9S7iXz0JhhJ_w'
