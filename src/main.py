@@ -5,6 +5,9 @@ from read_data import read_config_file, get_offchain_data, get_onchain_data
 from utils import (create_metrics_section, create_expander_section, compute_daily_share, display_no_chains_message,
                    build_alerts_section, display_metrics_subheader, display_charts_subheader)
 
+# Tracking parameter
+percentage_cookies = 0.3861
+
 # Reading data
 config = read_config_file()
 column_mapping = {str(k): v for k, v in config['chain_id'].items()}
@@ -26,9 +29,9 @@ max_tx_date = max(df_offchain_tx.index)
 
 # Calculate daily share
 df_safes_share_daily, series_safes_mean, series_safes_median, df_safes_relative = compute_daily_share(
-    df_offchain=df_offchain_safes, df_onchain=df_onchain_safes)
+    df_offchain=df_offchain_safes, df_onchain=df_onchain_safes, factor=percentage_cookies)
 df_tx_share_daily, series_tx_mean, series_tx_median, df_tx_relative = compute_daily_share(
-    df_offchain=df_offchain_tx, df_onchain=df_onchain_tx)
+    df_offchain=df_offchain_tx, df_onchain=df_onchain_tx, factor=percentage_cookies)
 
 # Streamlit part
 st.set_page_config(page_title='Safe{Wallet} share', page_icon='🔐', layout='wide', initial_sidebar_state='auto')
@@ -53,7 +56,8 @@ if page == "Safes created":
 
         # Alerts section
         build_alerts_section(min_date=min_safes_date, max_date=max_safes_date,
-                             dune_query_link="https://dune.com/queries/2632388", type=metric_type)
+                             dune_query_link="https://dune.com/queries/2632388", type=metric_type,
+                             tracking_parameter=percentage_cookies)
 
         # Metrics section
         display_metrics_subheader(type=metric_type)
@@ -89,7 +93,8 @@ elif page == "tx made":
 
         # Alerts section
         build_alerts_section(min_date=min_safes_date, max_date=max_safes_date,
-                             dune_query_link="https://dune.com/queries/2604616", type=metric_type)
+                             dune_query_link="https://dune.com/queries/2604616", type=metric_type,
+                             tracking_parameter=percentage_cookies)
 
         # Metrics section
         display_metrics_subheader(type=metric_type)
