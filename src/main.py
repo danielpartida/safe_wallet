@@ -3,10 +3,10 @@ import streamlit as st
 from charts import create_line_chart, create_area_chart
 from read_data import read_config_file, get_offchain_data, get_onchain_data
 from utils import (create_metrics_section, create_expander_section, compute_daily_share, display_no_chains_message,
-                   build_alerts_section, display_metrics_subheader, display_charts_subheader)
+                   build_alerts_section, display_metrics_subheader, display_charts_subheader, read_percentage_per_chain)
 
 # Tracking parameter
-percentage_cookies = 0.3861
+percentage_per_chain, percentage_cookies = read_percentage_per_chain()
 
 # Reading data
 config = read_config_file()
