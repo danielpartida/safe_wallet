@@ -47,7 +47,7 @@ def create_metrics_section(number_of_chains: int, chains_selected: list, series_
 
 
 def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Series, df_daily: pd.DataFrame,
-                            min_date: datetime, max_date: datetime):
+                            min_date: datetime, max_date: datetime, percentage_cookies: float):
     with st.expander("See more chain metrics"):
         tab_relative, tab_absolute, tab_daily = st.tabs(["Relative metrics", "Absolute metrics", "Daily share"])
 
@@ -60,7 +60,11 @@ def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Serie
 
         tab_daily.text(body='Data daily Safe creation share')
         tab_daily.dataframe(data=df_daily)
-        tab_daily.caption(body='Note: 80% of people accept tracking on web. Hence, we scale the Google Analytics data')
+        tab_daily.caption(
+            body='Note: {0:.2f}%% of people accept tracking on web. Hence, we scale the Google Analytics data'.format(
+                percentage_cookies
+            )
+        )
 
 
 def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, factor: float = 0.8) -> \
@@ -114,3 +118,12 @@ def display_metrics_subheader(type: str) -> st.subheader:
 
 def display_charts_subheader(type: str) -> st.subheader:
     return st.subheader(body='Charts SafeWallet share {0}'.format(type))
+
+
+def read_percentage_per_chain() -> Tuple[pd.Series, float]:
+    data = pd.read_csv('data/redefine_percentage_cookies.csv', index_col='chain_name')
+    data['% of users accepting tracking'] = data['% of users accepting tracking'].str.rstrip('%').astype(float) / 100
+
+    cookies_average = float(data['all'].iloc[0].rstrip('%')) / 100
+
+    return data['% of users accepting tracking'], cookies_average
