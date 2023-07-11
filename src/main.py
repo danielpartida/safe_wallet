@@ -29,9 +29,11 @@ max_tx_date = max(df_offchain_tx.index)
 
 # Calculate daily share
 df_safes_share_daily, series_safes_mean, series_safes_median, df_safes_relative = compute_daily_share(
-    df_offchain=df_offchain_safes, df_onchain=df_onchain_safes, factor=percentage_cookies)
+    df_offchain=df_offchain_safes, df_onchain=df_onchain_safes, factor_per_chain=percentage_per_chain,
+    average_factor=percentage_cookies)
 df_tx_share_daily, series_tx_mean, series_tx_median, df_tx_relative = compute_daily_share(
-    df_offchain=df_offchain_tx, df_onchain=df_onchain_tx, factor=percentage_cookies)
+    df_offchain=df_offchain_tx, df_onchain=df_onchain_tx, factor_per_chain=percentage_per_chain,
+    average_factor=percentage_cookies)
 
 # Streamlit part
 st.set_page_config(page_title='Safe{Wallet} share', page_icon='🔐', layout='wide', initial_sidebar_state='auto')
@@ -67,7 +69,8 @@ if page == "Safes created":
             series_mean=series_safes_mean, series_absolute=series_offchain_sum_safes, type=metric_type)
 
         create_expander_section(df_relative=df_safes_relative, series_absolute=series_offchain_sum_safes,
-                                df_daily=df_safes_share_daily, min_date=min_safes_date, max_date=max_safes_date)
+                                df_daily=df_safes_share_daily, min_date=min_safes_date, max_date=max_safes_date,
+                                percentage_cookies=percentage_cookies)
 
         # Charts section
         display_charts_subheader(type=metric_type)
@@ -104,7 +107,8 @@ elif page == "tx made":
             series_mean=series_tx_mean, series_absolute=series_offchain_sum_tx, type=metric_type)
 
         create_expander_section(df_relative=df_tx_relative, series_absolute=series_offchain_sum_tx,
-                                df_daily=df_tx_share_daily, min_date=min_tx_date, max_date=max_tx_date)
+                                df_daily=df_tx_share_daily, min_date=min_tx_date, max_date=max_tx_date,
+                                percentage_cookies=percentage_cookies)
 
         display_charts_subheader(type=metric_type)
 

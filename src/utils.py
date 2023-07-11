@@ -67,17 +67,22 @@ def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Serie
         )
 
 
-def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, factor: float = 0.8) -> \
+def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, factor_per_chain: pd.Series,
+                        average_factor: float) -> \
         Tuple[pd.DataFrame, pd.Series, pd.Series, pd.DataFrame]:
 
-    df_offchain /= factor
+    df_offchain_factor = df_offchain.div(factor_per_chain, axis='columns')
+    missing_columns = set(df_offchain.columns) - set(factor_per_chain.index)
+
+    for column in missing_columns:
+        df_offchain_factor[column] = df_offchain[column] / average_factor
 
     onchain_cols = set(df_onchain.columns)
-    offchain_cols = set(df_offchain.columns)
+    offchain_cols = set(df_offchain_factor.columns)
 
     common_cols = list(onchain_cols.intersection(offchain_cols))
 
-    df_share = df_offchain[common_cols].div(df_onchain[common_cols])
+    df_share = df_offchain_factor[common_cols].div(df_onchain[common_cols])
     df_share = df_share.round(2)
     df_share.index = df_share.index.date
     df_share.dropna(inplace=True)
@@ -122,6 +127,8 @@ def display_charts_subheader(type: str) -> st.subheader:
 
 def read_percentage_per_chain() -> Tuple[pd.Series, float]:
     data = pd.read_csv('data/redefine_percentage_cookies.csv', index_col='chain_name')
+    data.rename(columns={'mainnet': 'ethereum'}, inplace=True)
+
     data['% of users accepting tracking'] = data['% of users accepting tracking'].str.rstrip('%').astype(float) / 100
 
     cookies_average = float(data['all'].iloc[0].rstrip('%')) / 100
