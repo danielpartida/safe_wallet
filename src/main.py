@@ -62,7 +62,7 @@ if page == "Safes created":
                              tracking_parameter=percentage_cookies)
 
         # Metrics section
-        display_metrics_sub_header(type=metric_type)
+        display_metrics_sub_header(type_=metric_type)
 
         create_metrics_section(
             number_of_chains=len(selected_chains), chains_selected=selected_chains, series_median=series_safes_median,
@@ -70,10 +70,10 @@ if page == "Safes created":
 
         create_expander_section(df_relative=df_safes_relative, series_absolute=series_offchain_sum_safes,
                                 df_daily=df_safes_share_daily, min_date=min_safes_date, max_date=max_safes_date,
-                                percentage_cookies=percentage_cookies)
+                                percentage_cookies=percentage_cookies, type_=metric_type)
 
         # Charts section
-        display_charts_sub_header(type=metric_type)
+        display_charts_sub_header(type_=metric_type)
 
         fig_line_chart = create_line_chart(df=df_safes_share_daily, chains=selected_chains,
                                            title='Daily Safe creation share')
@@ -100,7 +100,7 @@ elif page == "tx made":
                              tracking_parameter=percentage_cookies)
 
         # Metrics section
-        display_metrics_sub_header(type=metric_type)
+        display_metrics_sub_header(type_=metric_type)
 
         create_metrics_section(
             number_of_chains=len(selected_chains), chains_selected=selected_chains, series_median=series_tx_median,
@@ -108,9 +108,9 @@ elif page == "tx made":
 
         create_expander_section(df_relative=df_tx_relative, series_absolute=series_offchain_sum_tx,
                                 df_daily=df_tx_share_daily, min_date=min_tx_date, max_date=max_tx_date,
-                                percentage_cookies=percentage_cookies)
+                                percentage_cookies=percentage_cookies, type_=metric_type)
 
-        display_charts_sub_header(type=metric_type)
+        display_charts_sub_header(type_=metric_type)
 
         fig_line_chart = create_line_chart(df=df_tx_share_daily, chains=selected_chains,
                                            title='Daily Safe tx made share')
