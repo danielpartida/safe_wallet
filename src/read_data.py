@@ -10,7 +10,8 @@ def read_config_file(filepath: str = 'data/config.yml'):
     return config
 
 
-def get_offchain_data(column_mapping: dict, file: str, path: str = 'data/') -> Tuple[pd.DataFrame, pd.Series]:
+def get_offchain_data(column_mapping: dict, file: str, path: str = 'data/') \
+        -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
     file_path = path + file
     df = pd.read_csv(file_path, index_col='date')
 
@@ -19,7 +20,11 @@ def get_offchain_data(column_mapping: dict, file: str, path: str = 'data/') -> T
 
     df.index = pd.to_datetime(df.index, format='%Y%m%d')
 
-    return df, df.sum(axis=0)
+    # Add monthly median share
+    df_monthly_median = df.resample('M').median()
+    df_monthly_change_absolute = df_monthly_median.pct_change()
+
+    return df, df.sum(axis=0), df_monthly_change_absolute
 
 
 def get_onchain_data(file_path: str, values: str) -> pd.DataFrame:

@@ -6,24 +6,29 @@ import numpy as np
 import streamlit as st
 
 
-def create_metrics_section(number_of_chains: int, chains_selected: list, series_median: pd.Series,
-                           series_absolute: pd.Series, type_: str, df_monthly_change: pd.DataFrame):
+def create_metrics_section(number_of_chains: int, chains_selected: list, series_share: pd.Series,
+                           series_absolute: pd.Series, type_: str, df_monthly_change_share: pd.DataFrame,
+                           df_monthly_change_absolute):
 
     # General metrics subsection
-    median_metric = series_median.loc[chains_selected].median()
-    monthly_change = df_monthly_change.loc[:, chains_selected].median(axis=1)[-1]
+    median_metric = series_share.loc[chains_selected].median()
+    monthly_change = df_monthly_change_share.loc[:, chains_selected].median(axis=1)[-1]
     st.metric("SafeWallet share {0} crosschain".format(type_), '{0:.2f}%'.format(100 * median_metric),
               '{0:.2f}%'.format(100 * monthly_change))
     # st.caption("Median used as metric for calculation")
 
+    # Monthly share change
+    last_monthly_change_share = df_monthly_change_share.iloc[-1]
+    last_monthly_change_absolute = df_monthly_change_absolute.iloc[-1]
+
     cols = st.columns(number_of_chains)
     for i, chain in enumerate(chains_selected):
-        if chain not in series_median.index or chain not in series_absolute.index:
+        if chain not in series_share.index or chain not in series_absolute.index:
             st.error("Chain {0} not found in data".format(chain))
             continue
 
         # Metrics for current chain
-        chain_share = series_median.loc[chain]
+        chain_share = series_share.loc[chain]
         chain_safes = series_absolute.loc[chain]
 
         short_names = {
@@ -33,13 +38,15 @@ def create_metrics_section(number_of_chains: int, chains_selected: list, series_
 
         # Detailed metrics subsection
         cols[i].metric("{0} SafeWallet {1} share".format(short_names[chain], type_),
-                       "{0:.2f}%".format(100 * chain_share), "{0:.2f}%".format(100 * (chain_share - median_metric)))
+                       "{0:.2f}%".format(100 * chain_share), "{0:.2f}%".format(100 * last_monthly_change_share[chain]))
 
         if type_ == 'creation':
-            cols[i].metric("{0} SafeWallet Safes".format(short_names[chain]), chain_safes)
+            cols[i].metric("{0} SafeWallet Safes".format(short_names[chain]), chain_safes,
+                           "{0:.2f}%".format(100 * last_monthly_change_absolute[chain]))
 
         elif type_ == 'tx_made':
-            cols[i].metric("{0} SafeWallet tx made".format(short_names[chain]), chain_safes)
+            cols[i].metric("{0} SafeWallet tx made".format(short_names[chain]), chain_safes,
+                           "{0:.2f}%".format(100 * last_monthly_change_absolute[chain]))
 
         else:
             cols[i].error("No metric type found")
