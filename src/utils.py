@@ -93,7 +93,12 @@ def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, fac
     df_relative = pd.DataFrame(series_mean, columns=['mean'])
     df_relative['median'] = series_median
 
-    return df_share, series_mean, series_median, df_relative
+    # Compute the monthly percentage change
+    df_share.index = pd.to_datetime(df_share.index)
+    df_monthly_median = df_share.resample('M').median()
+    df_monthly_change = df_monthly_median.pct_change()
+
+    return df_share, series_mean, series_median, df_relative, df_monthly_change
 
 
 def display_no_chains_message() -> st.error:
