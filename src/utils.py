@@ -2,20 +2,19 @@ from datetime import datetime, date
 from typing import Tuple
 
 import pandas as pd
+import numpy as np
 import streamlit as st
 
 
-# TODO: Add monthly change to absolute numbers
 def create_metrics_section(number_of_chains: int, chains_selected: list, series_median: pd.Series,
-                           series_mean: pd.Series, series_absolute: pd.Series, type_: str):
-
-    median = series_median.loc[chains_selected].median()
-    average = series_mean.loc[chains_selected].median()
+                           series_absolute: pd.Series, type_: str, df_monthly_change: pd.DataFrame):
 
     # General metrics subsection
-    col_median, col_avg = st.columns(2)
-    col_median.metric("Median SafeWallet share {0} crosschain".format(type_), '{0:.2f}%'.format(100 * median))
-    col_avg.metric("Average SafeWallet share {0} made crosschain".format(type_), '{0:.2f}%'.format(100 * average))
+    median_metric = series_median.loc[chains_selected].median()
+    monthly_change = df_monthly_change.loc[:, chains_selected].median(axis=1)[-1]
+    st.metric("SafeWallet share {0} crosschain".format(type_), '{0:.2f}%'.format(100 * median_metric),
+              '{0:.2f}%'.format(100 * monthly_change))
+    # st.caption("Median used as metric for calculation")
 
     cols = st.columns(number_of_chains)
     for i, chain in enumerate(chains_selected):
@@ -34,7 +33,7 @@ def create_metrics_section(number_of_chains: int, chains_selected: list, series_
 
         # Detailed metrics subsection
         cols[i].metric("{0} SafeWallet {1} share".format(short_names[chain], type_),
-                       "{0:.2f}%".format(100 * chain_share), "{0:.2f}%".format(100 * (chain_share - median)))
+                       "{0:.2f}%".format(100 * chain_share), "{0:.2f}%".format(100 * (chain_share - median_metric)))
 
         if type_ == 'creation':
             cols[i].metric("{0} SafeWallet Safes".format(short_names[chain]), chain_safes)
@@ -69,7 +68,7 @@ def create_expander_section(df_relative: pd.DataFrame, series_absolute: pd.Serie
 
 def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, factor_per_chain: pd.Series,
                         average_factor: float) -> \
-        Tuple[pd.DataFrame, pd.Series, pd.Series, pd.DataFrame]:
+        Tuple[pd.DataFrame, pd.Series, pd.Series, pd.DataFrame, pd.DataFrame]:
 
     df_offchain_factor = df_offchain.div(factor_per_chain, axis='columns')
     missing_columns = set(df_offchain.columns) - set(factor_per_chain.index)
@@ -85,6 +84,7 @@ def compute_daily_share(df_offchain: pd.DataFrame, df_onchain: pd.DataFrame, fac
     df_share = df_offchain_factor[common_cols].div(df_onchain[common_cols])
     df_share = df_share.round(2)
     df_share.index = df_share.index.date
+    df_share.replace([np.inf, -np.inf], np.nan, inplace=True)
     df_share.dropna(inplace=True)
 
     series_mean = df_share.mean(axis=0)
