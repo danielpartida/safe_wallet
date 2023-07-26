@@ -58,7 +58,7 @@ if page == "Safes created":
 
         # Alerts section
         build_alerts_section(min_date=min_safes_date, max_date=max_safes_date,
-                             dune_query_link="https://dune.com/queries/2632388", type_=metric_type,
+                             dune_query_link="https://dune.com/queries/2604616", type_=metric_type,
                              tracking_parameter=percentage_cookies)
 
         # Metrics section
@@ -96,7 +96,7 @@ elif page == "tx made":
 
         # Alerts section
         build_alerts_section(min_date=min_safes_date, max_date=max_safes_date,
-                             dune_query_link="https://dune.com/queries/2604616", type_=metric_type,
+                             dune_query_link="https://dune.com/queries/2632388", type_=metric_type,
                              tracking_parameter=percentage_cookies)
 
         # Metrics section
