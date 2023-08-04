@@ -79,9 +79,13 @@ if page == "Safes created":
         # Charts section
         display_charts_sub_header(type_=metric_type)
 
-        fig_line_chart = create_line_chart(df=df_safes_share_daily, chains=selected_chains,
-                                           title='Daily Safe creation share')
-        st.plotly_chart(fig_line_chart)
+        fig_absolute_line_chart = create_line_chart(df=df_offchain_safes, chains=selected_chains,
+                                                    title='Daily Safes deployed via our interface')
+        st.plotly_chart(fig_absolute_line_chart)
+
+        fig_share_line_chart = create_line_chart(df=df_safes_share_daily, chains=selected_chains,
+                                                 title='Daily Safe creation share')
+        st.plotly_chart(fig_share_line_chart)
 
         fig_area_chart = create_area_chart(df=df_safes_share_daily, chains=selected_chains,
                                            title='Normalized daily Safe{Wallet} creation share')
@@ -118,9 +122,13 @@ elif page == "tx made":
 
         display_charts_sub_header(type_=metric_type)
 
-        fig_line_chart = create_line_chart(df=df_tx_share_daily, chains=selected_chains,
-                                           title='Daily Safe tx made share')
-        st.plotly_chart(fig_line_chart)
+        fig_absolute_line_chart = create_line_chart(df=df_offchain_tx, chains=selected_chains,
+                                                    title='Daily Safe txs via our interface')
+        st.plotly_chart(fig_absolute_line_chart)
+
+        fig_share_line_chart = create_line_chart(df=df_tx_share_daily, chains=selected_chains,
+                                                 title='Daily Safe tx made share')
+        st.plotly_chart(fig_share_line_chart)
 
         fig_area_chart = create_area_chart(df=df_tx_share_daily, chains=selected_chains,
                                            title='Normalized daily Safe{Wallet} tx made share')
