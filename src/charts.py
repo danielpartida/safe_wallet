@@ -2,8 +2,12 @@ import pandas as pd
 import plotly.graph_objects as go
 
 
-def create_line_chart(df: pd.DataFrame, chains: list, title: str) -> go.Figure:
+def create_line_chart(df: pd.DataFrame, chains: list, title: str, weekly: bool = True) -> go.Figure:
+
     fig = go.Figure()
+
+    if weekly:
+        df = df.resample('W').sum()
 
     for chain in chains:
         fig.add_trace(go.Scatter(x=df.index, y=df[chain], mode='lines', name=chain))
