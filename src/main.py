@@ -79,6 +79,8 @@ if page == "Safes created":
         # Charts section
         display_charts_sub_header(type_=metric_type)
 
+        st.text('Testing update')
+
         fig_absolute_line_chart = create_line_chart(df=df_offchain_safes, chains=selected_chains,
                                                     title='Weekly Safes deployed via our interface', weekly=True)
         st.plotly_chart(fig_absolute_line_chart)
